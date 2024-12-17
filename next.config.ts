@@ -1,7 +1,15 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
+/** @type {NextConfig} */
 const nextConfig: NextConfig = {
-  /* config options here */
+ 
+    images: {
+        remotePatterns: [
+            {
+                hostname: "exciting-marlin-134.convex.cloud",
+            },
+        ],
+    },
 };
 
 export default nextConfig;
