@@ -39,6 +39,28 @@ export const uploadNote = mutation({
     },
   })
 
+
+    
+    
+  export const uploadShop = mutation({
+    args:{
+        price: v.number(),
+        course: v.string(),
+        url: v.string(),
+        name: v.string(),
+        deadline:v.string()
+    },
+    async handler(ctx, args) {
+        const identity = await ctx.auth.getUserIdentity()
+        if (!identity){
+            throw new ConvexError("Log in to Upload a file")
+        }
+        await ctx.db.insert("shop", {...args})
+        
+    }
+})
+
+
 export const updateProfile = mutation({
   args: {
     name: v.string(),
@@ -55,8 +77,7 @@ export const updateProfile = mutation({
     const userId = identity.subject;
     
     // Retrieve the existing user profile
-    const user = await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), userId)).unique();
-    
+    const user = await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), userId)).unique();    
     if (!user) {
       throw new ConvexError("User not found in the database");
     }
@@ -195,25 +216,23 @@ export const deleteCourse = mutation({
       await ctx.db.delete(note!._id);
     },
   });
-  
-
-
-
-export const uploadShop = mutation({
-    args:{
-        price: v.number(),
-        course: v.string(),
-        url: v.string(),
-        name: v.string(),
-        deadline:v.string()
+export const deleteShop = mutation({
+    args: {
+      noteId: v.string(), // The ID of the note to delete
     },
     async handler(ctx, args) {
-        const identity = await ctx.auth.getUserIdentity()
-        if (!identity){
-            throw new ConvexError("Log in to Upload a file")
-        }
-        await ctx.db.insert("shop", {...args})
-        
-    }
-})
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Log in to delete a note");
+      }
+      const note = await ctx.db
+      .query("shop")
+      .filter((q) => q.eq(q.field("_id"), args.noteId))
+      .unique();
+
+      // Delete the note from the database
+      await ctx.db.delete(note!._id);
+    },
+  });
+  
 

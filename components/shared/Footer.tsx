@@ -1,5 +1,5 @@
 
-import { FacebookIcon, Github, InstagramIcon, Twitter } from 'lucide-react'
+import { FacebookIcon, Github, InstagramIcon, Linkedin, Twitter } from 'lucide-react'
 import Link from 'next/link'
 
 import React from 'react'
@@ -7,20 +7,20 @@ import React from 'react'
 const Footer = async () => {
   const icon = [
     {
-        path:'',
+        path:'https://www.facebook.com/profile.php?id=100084631813516',
         icon:<FacebookIcon />
     },
     {
-        path:'',
+        path:'https://x.com/Hemmyevo?t=mMX6xoH_0SJs6pL8bLYblQ&s=09',
         icon:<Twitter />
     },
     {
-        path:'',
+        path:'https://www.instagram.com/hemmy_evo?igsh=M2Q1eTNra2x4c3o4',
         icon: <InstagramIcon />
     },
     {
-        path:'',
-        icon: <Github />
+        path:'https://www.linkedin.com/in/atilola-emmanuel-99964b324?utm_source=sare&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
+        icon: <Linkedin />
     },
  
 ]
@@ -37,7 +37,7 @@ const Footer = async () => {
               </p>
     
               <div className="flex mt-4 justify-center space-x-5 sm:mt-0">
-                {icon.map((list,i) =>  <Link key={i} href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-white ">
+                {icon.map((list,i) =>  <Link key={i} href={list.path} className="text-gray-500 hover:text-gray-900 dark:hover:text-white ">
                    {list.icon}
                   </Link> )}
                   

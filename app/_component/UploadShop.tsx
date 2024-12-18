@@ -31,14 +31,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { CalendarIcon } from "lucide-react"
 
 const formSchema = z.object({
   course: z.string().nonempty('Course code is required'),
   price: z.string().nonempty('Price is required'),
-  deadline: z.date().nullable().optional(),
   name: z.string().nonempty('Name is required'),
   url: z.string().url('Invalid URL').nonempty('URL is required'),
 });
@@ -46,8 +42,9 @@ const formSchema = z.object({
 const UploadManual = () => {
   const uploadManual = useMutation(api.uploading.uploadShop);
   const courses = useQuery(api.getting.getCourses) || [];
-  const [date, setDate] = React.useState<Date>()
+  const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+  const [isDateDialogOpen, setIsDateDialogOpen] = useState(false); // New state for date picker dialog
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,14 +52,13 @@ const UploadManual = () => {
       price: '',
       name: '',
       url: '',
-      deadline: null,
     },
     mode: 'onChange',
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const deadline = date ? format(date, 'yyyy-MM-dd') : '';
+      const deadline = filterDate ? format(filterDate, 'dd/MM/yyyy') : '';
       await uploadManual({
         ...values,
         price: Number(values.price),
@@ -70,7 +66,7 @@ const UploadManual = () => {
       });
 
       form.reset();
-      setDate(undefined);
+      setFilterDate(null);
       toast.success('Manual uploaded successfully');
     } catch (err) {
       console.error(err);
@@ -180,39 +176,36 @@ const UploadManual = () => {
                 </FormItem>
               )}
             />
-            {/* Deadline Field */}
-            <FormField
-              control={form.control}
-              name="deadline"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Deadline</FormLabel>
-                  <FormMessage />
-              <Popover>
-              <PopoverTrigger asChild>
+            {/* Deadline Field (Using Dialog for date selection) */}
+            <FormItem>
+              <FormLabel>Deadline</FormLabel>
               <Button
-              variant={"outline"}
-              className={cn(
-              "w-[280px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-              )}
+                variant="outline"
+                className="w-[280px] justify-start"
+                onClick={() => setIsDateDialogOpen(true)} // Open the date picker dialog
               >
-              <CalendarIcon />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
+                {filterDate ? format(filterDate, 'PPP') : 'Filter by date'}
               </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-              <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-              />
-              </PopoverContent>
-              </Popover>
-                </FormItem>
-              )}
-            />
+            </FormItem>
+
+            {/* Date Dialog */}
+            <Dialog open={isDateDialogOpen} onOpenChange={setIsDateDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Date</DialogTitle>
+                </DialogHeader>
+                <Calendar
+                  mode="single"
+                  selected={filterDate || undefined} // Ensure correct selected value
+                  onSelect={(date) => {
+                    setFilterDate(date || null); // Ensure state updates correctly
+                    setIsDateDialogOpen(false); // Close the date picker dialog
+                  }}
+                  className="border-none"
+                />
+              </DialogContent>
+            </Dialog>
+
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}

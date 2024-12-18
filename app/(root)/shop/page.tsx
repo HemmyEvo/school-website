@@ -1,22 +1,21 @@
-'use client';
-
-import { Calendar } from '@/components/ui/calendar';
-import { PlusCircle } from 'lucide-react';
+'use client'
 import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { format } from 'date-fns';
-import Link from 'next/link';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { Trash } from 'lucide-react';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Link from 'next/link';
 import UploadManual from '@/app/_component/UploadShop';
+import { Calendar } from '@/components/ui/calendar';
 
 type Props = {};
 
 const Shop = (props: Props) => {
- const me = useQuery(api.user.getMe);
+  const me = useQuery(api.user.getMe);
   const admin = me?.admin;
   const manuals = useQuery(api.getting.getShopItems) || [];
 
@@ -53,13 +52,28 @@ const Shop = (props: Props) => {
     totalPages = 1;
   }
 
+  const deleteManual = useMutation(api.uploading.deleteShop);
+  const handleDelete = async (noteId: string) => {
+    try {
+      await deleteManual({ noteId });
+    } catch (error) {
+      alert('Error deleting note');
+    }
+  };
+
+  // Function to format the price to Nigerian Naira
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+    }).format(price);
+  };
+
   return (
     <div className="h-full flex flex-col p-3 w-full">
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-bold">Buy Manuals</p>
-        {admin && (
-         <UploadManual />
-        )} 
+        {admin && <UploadManual />}
       </div>
 
       <div className="mb-4 flex flex-wrap gap-4">
@@ -73,21 +87,21 @@ const Shop = (props: Props) => {
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className={cn('w-[280px] justify-start')}>
+            <Button variant="outline" className="w-[280px] justify-start">
               {filterDate ? format(filterDate, 'PPP') : 'Filter by date'}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
-              selected={filterDate || undefined} // Convert null to undefined
-              onSelect={(date) => setFilterDate(date || null)} // Ensure null can still be set
+              selected={filterDate || undefined}
+              onSelect={(date) => setFilterDate(date || null)}
               className="border-none"
             />
           </PopoverContent>
         </Popover>
 
-        <Select onValueChange={(value) => setFilterCourseCode(value === "all" ? "" : value)}>
+        <Select onValueChange={(value) => setFilterCourseCode(value === 'all' ? '' : value)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select Course" />
           </SelectTrigger>
@@ -124,26 +138,25 @@ const Shop = (props: Props) => {
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
                 Buy Link
               </th>
+              {admin && (
+                <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
             {paginatedManuals.map((manual, index) => (
               <tr key={index} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2">{manual.course}</td>
+                <td className="border border-gray-300 px-4 py-2">{manual.name}</td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {manual.course}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {manual.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {manual.price}
+                  {formatPrice(manual.price)}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {new Date(manual._creationTime).toLocaleDateString()}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {manual.deadline}
-                </td>
+                <td className="border border-gray-300 px-4 py-2">{manual.deadline}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <Link
                     href={manual.url}
@@ -152,6 +165,31 @@ const Shop = (props: Props) => {
                     Buy Now
                   </Link>
                 </td>
+                {admin && (
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Dialog>
+                      <DialogTrigger >
+                        <Button variant="outline" className="text-red-500">
+                          <Trash className="mr-2" /> Delete
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>Confirm Deletion</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to permanently delete this entry? This action cannot be undone, and the data will be removed from the database.
+                        </DialogDescription>
+                        <DialogFooter>
+                          <Button onClick={() => handleDelete(manual._id)} className="bg-red-500 text-white">
+                            Yes, Delete
+                          </Button>
+                          <DialogClose>
+                            <Button variant="outline" className="text-gray-500">Cancel</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

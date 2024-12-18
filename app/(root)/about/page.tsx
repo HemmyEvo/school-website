@@ -35,7 +35,7 @@ const AboutMe = (props: Props) => {
             <p className="text-lg text-gray-700 font-semibold">Let&rsquo;s Connect</p>
             <p className="text-sm text-gray-600 mt-2 mb-4">
               I&rsquo;m always open to conversations, collaborations, or simply sharing ideas. If you&apos;d like to reach out, you can contact me directly on WhatsApp:
-              <Link href="https://wa.link/endaa" target="_blank" className="text-blue-600 underline hover:text-blue-800">
+              <Link href={'https://wa.link/endaa7'} target="_blank" className="text-blue-600 underline hover:text-blue-800">
                 WhatsApp Me
               </Link>
             </p>
