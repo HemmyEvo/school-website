@@ -44,7 +44,7 @@ const UploadManual = () => {
   const courses = useQuery(api.getting.getCourses) || [];
   const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-  const [isDateDialogOpen, setIsDateDialogOpen] = useState(false); // New state for date picker dialog
+  const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,8 +57,14 @@ const UploadManual = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Ensure that the deadline is selected before submitting
+    if (!filterDate) {
+      toast.error('Please select a deadline date');
+      return;
+    }
+
     try {
-      const deadline = filterDate ? format(filterDate, 'dd/MM/yyyy') : '';
+      const deadline = format(filterDate, 'dd/MM/yyyy');
       await uploadManual({
         ...values,
         price: Number(values.price),
@@ -182,7 +188,10 @@ const UploadManual = () => {
               <Button
                 variant="outline"
                 className="w-[280px] justify-start"
-                onClick={() => setIsDateDialogOpen(true)} // Open the date picker dialog
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent form submission
+                  setIsDateDialogOpen(true); // Open the date picker dialog
+                }}
               >
                 {filterDate ? format(filterDate, 'PPP') : 'Filter by date'}
               </Button>
