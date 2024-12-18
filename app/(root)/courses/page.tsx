@@ -1,17 +1,12 @@
 'use client';
-
-import { Calendar } from '@/components/ui/calendar';
-import { PlusCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { format } from 'date-fns';
 import UploadCourse from '@/app/_component/UploadCourse';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Trash } from 'lucide-react';
 type Props = {};
 
 const Courses = (props: Props) => {
@@ -48,6 +43,16 @@ const Courses = (props: Props) => {
     totalPages = 1;
     currentPage = 1;
   }
+    const deleteNote = useMutation(api.uploading.deleteCourse);
+    const handleDelete = async (noteId: string) => {
+        try {
+          await deleteNote({ noteId });
+        } catch (error) {
+          alert("Error deleting note");
+        }
+      
+    };
+  
 
   return (
     <div className="h-full flex flex-col p-3 w-full">
@@ -90,6 +95,7 @@ const Courses = (props: Props) => {
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
                 Units
               </th>
+              {admin && <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -101,6 +107,36 @@ const Courses = (props: Props) => {
                 <td className="border text-center border-gray-300 px-4 py-2">
                   {course.unit}
                 </td>
+                {admin && (
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Dialog>
+                    <DialogTrigger>
+                    <Button variant="outline" className="text-red-500">
+                    <Trash className="mr-2" /> Delete
+                    </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                    <DialogTitle>
+                    Confirm Deletion
+                    </DialogTitle>
+                    <DialogDescription>
+                    Are you sure you want to permanently delete this entry? This action cannot be undone and the data will be removed from the database.
+                    </DialogDescription>
+                    <DialogFooter>
+                    <Button onClick={() => handleDelete(course._id)} className="bg-red-500 text-white">
+                    Yes, Delete
+                    </Button>
+                    <DialogClose>
+                    <Button variant="outline" className="text-gray-500">Cancel</Button>
+                    </DialogClose>
+                    </DialogFooter>
+                    </DialogContent>
+                    </Dialog>
+
+              
+                     
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

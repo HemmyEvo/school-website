@@ -12,8 +12,7 @@ const Settings = (props: Props) => {
     <DropdownMenuTrigger className='outline-none'>
     <SettingsIcon />
     </DropdownMenuTrigger>
-    <DropdownMenuContent>
-        
+    <DropdownMenuContent>   
         <DropdownMenuItem  className="space-x-2 flex cursor-pointer justify-between items-center">
           <DarkMode />
         </DropdownMenuItem>

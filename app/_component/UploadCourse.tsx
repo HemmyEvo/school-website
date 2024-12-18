@@ -67,13 +67,13 @@ const UploadCourse = () => {
   return (
     <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
       <DialogTrigger asChild>
-        <button
+        <div
           className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
           aria-label="Add Course"
         >
           <PlusCircle />
           Add Course
-        </button>
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

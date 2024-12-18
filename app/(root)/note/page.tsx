@@ -1,76 +1,96 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
-import UploadAction from '@/app/_component/UploadAction';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import UploadNoteAction from '@/app/_component/UploadNote';
-import Link from 'next/link';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const Note = () => {
-  const admin = true; // Update this based on the database
+  const me = useQuery(api.user.getMe);
+  const admin = me?.admin;
 
-  const notes = [
-    // Sample notes data
-    {
-      courseCode: 'AG101',
-      title: 'Introduction to Soil Science',
-      datePosted: '2024-12-01',
-      timePosted: '9:00 AM',
-      imageUrl: 'https://example.com/note1.png',
-    },
-    {
-      courseCode: 'CSC103',
-      title: 'Basics of Programming',
-      datePosted: '2024-12-05',
-      timePosted: '11:00 AM',
-      imageUrl: 'https://example.com/note2.png',
-    },
-    // Additional notes...
-  ];
+  const notes = useQuery(api.getting.getNotes) || [];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [filterCourseCode, setFilterCourseCode] = useState('');
   let [currentPage, setCurrentPage] = useState(1);
+  const [editingNote, setEditingNote] = useState<any | null>(null);  // State to manage editing
   const itemsPerPage = 5;
 
   const filteredNotes = notes.filter((note) => {
+    const creationDate = new Date(note._creationTime);
+    const datePosted = creationDate.toLocaleDateString();
     const matchesSearch = note.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDate = filterDate
-      ? note.datePosted === format(filterDate, 'yyyy-MM-dd')
+      ? datePosted === format(filterDate, 'yyyy-MM-dd')
       : true;
     const matchesCourseCode = filterCourseCode
-      ? note.courseCode === filterCourseCode
+      ? note.courseCode === filterCourseCode || note.courseCode === 'ALL'
       : true;
     return matchesSearch && matchesDate && matchesCourseCode;
   });
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedNotes = filteredNotes.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedNotes = filteredNotes.slice(startIndex, startIndex + itemsPerPage);
 
   let totalPages = Math.ceil(filteredNotes.length / itemsPerPage);
   if (totalPages === 0) {
-   currentPage = 1 
+    currentPage = 1;
     totalPages = 1;
   }
+  // Helper to download all URLs as a ZIP file
+  const downloadAllImages = async (urls: string[], title: string) => {
+    const zip = new JSZip();
+
+    await Promise.all(
+      urls.map(async (url, index) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        zip.file(`${title}_${index + 1}.jpg`, blob);
+      })
+    );
+
+    const zipContent = await zip.generateAsync({ type: 'blob' });
+    saveAs(zipContent, `${title}.zip`);
+  };
+
+  // Helper to download a single image
+  const downloadSingleImage = async (url: string, title: string, index: number) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    saveAs(blob, `${title}_${index + 1}.jpg`);
+  };
+
+  const deleteNote = useMutation(api.uploading.deleteNote);
+  const handleDelete = async (noteId: string) => {
+      try {
+        await deleteNote({ noteId });
+      } catch (error) {
+        alert("Error deleting note");
+      }
+    
+  };
+
+
   return (
     <div className="h-full flex flex-col p-3 w-full">
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-bold">Notes</p>
-        {admin && (
-        <UploadNoteAction />
-        )} {/* upload file action */}
+        {admin && <UploadNoteAction />}
       </div>
 
       <div className="mb-4 flex flex-wrap gap-4">
@@ -114,61 +134,83 @@ const Note = () => {
           </SelectContent>
         </Select>
       </div>
+
       <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse border text-sm sm:text-base border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-              Course Code
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-              Title
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-              Date Posted
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-              Time Posted
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-              Download
-            </th>
-            {admin &&(
-                   <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
-                   Actions
-                 </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedNotes.map((note, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2">
-                {note.courseCode}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {note.title}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {note.datePosted}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {note.timePosted}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  href={note.imageUrl}
-                  download
-                  className="text-blue-500 underline hover:text-blue-700"
-                >
-                  Download Image
-                </Link>
-              </td>
-              
+        <table className="min-w-full border-collapse border text-sm sm:text-base border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Course Code</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Title</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Date Posted</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Download</th>
+              {admin && <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Actions</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedNotes.map((note, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2">
+                  {note.courseCode}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {note.title}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {new Date(note._creationTime).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Button variant="outline">Download</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {note.imageUrl.length > 1 && (
+                        <DropdownMenuItem onClick={() => downloadAllImages(note.imageUrl, note.title)}>
+                          Download All as ZIP
+                        </DropdownMenuItem>
+                      )}
+                      {note.imageUrl.map((url, i) => (
+                        <DropdownMenuItem key={i} onClick={() => downloadSingleImage(url, note.title, i)}>
+                          Download {i + 1}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+                {admin && (
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Dialog>
+                    <DialogTrigger>
+                    <Button variant="outline" className="text-red-500">
+                    <Trash className="mr-2" /> Delete
+                    </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                    <DialogTitle>
+                    Confirm Deletion
+                    </DialogTitle>
+                    <DialogDescription>
+                    Are you sure you want to permanently delete this entry? This action cannot be undone and the data will be removed from the database.
+                    </DialogDescription>
+                    <DialogFooter>
+                    <Button onClick={() => handleDelete(note._id)} className="bg-red-500 text-white">
+                    Yes, Delete
+                    </Button>
+                    <DialogClose>
+                    <Button variant="outline" className="text-gray-500">Cancel</Button>
+                    </DialogClose>
+                    </DialogFooter>
+                    </DialogContent>
+                    </Dialog>
+
+              
+                     
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="flex justify-between items-center mt-4">
@@ -190,6 +232,8 @@ const Note = () => {
           Next
         </button>
       </div>
+
+   
     </div>
   );
 };

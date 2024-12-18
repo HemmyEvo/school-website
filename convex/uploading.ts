@@ -86,6 +86,85 @@ export const uploadAnnouncement = mutation({
     }
 })
 
+export const deleteNote = mutation({
+    args: {
+      noteId: v.string(), // The ID of the note to delete
+    },
+    async handler(ctx, args) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Log in to delete a note");
+      }
+      const note = await ctx.db
+      .query("note")
+      .filter((q) => q.eq(q.field("_id"), args.noteId))
+      .unique();
+
+      // Delete the note from the database
+      await ctx.db.delete(note!._id);
+    },
+  });
+  
+export const deleteAssignment = mutation({
+    args: {
+      noteId: v.string(), // The ID of the note to delete
+    },
+    async handler(ctx, args) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Log in to delete a note");
+      }
+      const note = await ctx.db
+      .query("assignment")
+      .filter((q) => q.eq(q.field("_id"), args.noteId))
+      .unique();
+
+      // Delete the note from the database
+      await ctx.db.delete(note!._id);
+    },
+  });
+  
+export const deleteAnnouncement = mutation({
+    args: {
+      noteId: v.string(), // The ID of the note to delete
+    },
+    async handler(ctx, args) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Log in to delete a note");
+      }
+      const note = await ctx.db
+      .query("announcement")
+      .filter((q) => q.eq(q.field("_id"), args.noteId))
+      .unique();
+
+      // Delete the note from the database
+      await ctx.db.delete(note!._id);
+    },
+  });
+  
+export const deleteCourse = mutation({
+    args: {
+      noteId: v.string(), // The ID of the note to delete
+    },
+    async handler(ctx, args) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new ConvexError("Log in to delete a note");
+      }
+      const note = await ctx.db
+      .query("courses")
+      .filter((q) => q.eq(q.field("_id"), args.noteId))
+      .unique();
+
+      // Delete the note from the database
+      await ctx.db.delete(note!._id);
+    },
+  });
+  
+
+
+
 export const uploadShop = mutation({
     args:{
         price: v.number(),

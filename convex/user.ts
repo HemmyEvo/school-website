@@ -32,7 +32,6 @@ export const getMe = query({
 			.query("users")
 			.withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
 			.unique();
-			console.log(identity.tokenIdentifier)
 
 		if (!user) {
 			throw new ConvexError("User not found");

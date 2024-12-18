@@ -31,7 +31,7 @@ const Header = (props: Props) => {
         <div className="logo">
             <div className=" text-xl font-semibold cursor-pointer"><Link href="/"> Class&apos;27 portal</Link></div>
         </div>
-        <div className="setting flex items-center space-x-4 pr-5">
+        <div className="setting flex items-center justify-center h-7 space-x-4 pr-5">
             <div className="avatar cursor-pointer">
             <Avatar className="w-8 h-8">
                 <AvatarImage src={me?.image}  className="object-cover h-8 w-8 rounded-full" />
@@ -45,7 +45,7 @@ const Header = (props: Props) => {
         </div>
         {
       
-                <div className="nav-bar absolute z-40 overflow-hidden  space-y-2 grid right-0 top-16">
+                <div className={`nav-bar  absolute z-40 overflow-hidden ${toggle ? 'flex' :'hidden'}  space-y-2 grid right-0 top-16`}>
                     {Links.map((link,i) => (
                         <Link 
                         href={link.path} 

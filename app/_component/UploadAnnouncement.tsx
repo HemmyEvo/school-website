@@ -52,6 +52,7 @@ const UploadAnnouncementAction  = () => {
       });
       toast.success('Announcement uploaded successfully!');
       form.reset();
+      setIsFileDialogOpen(false)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to upload. Please try again.');
     }
@@ -59,10 +60,10 @@ const UploadAnnouncementAction  = () => {
   return (
        <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
           <DialogTrigger asChild>
-            <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
+            <div className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
               <PlusCircle />
-              Add Note
-            </button>
+              Add Announcement
+            </div>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

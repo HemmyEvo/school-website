@@ -32,7 +32,6 @@ const formSchema = z.object({
 
 const UploadAssignmentAction = () => {
   const createAssignment = useMutation(api.uploading.uploadAssignment);
-  const generateUploadUrl = useMutation(api.uploading.generateUploadUrl);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
   const courses = useQuery(api.getting.getCourses) || [];
   const form = useForm({
@@ -58,17 +57,18 @@ const UploadAssignmentAction = () => {
       });
       toast.success('Assignment uploaded successfully!');
       form.reset();
+      setIsFileDialogOpen(false)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to upload. Please try again.');
     }
   };
   return (
        <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
+          <DialogTrigger >
+            <div className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
               <PlusCircle />
-              Add Note
-            </button>
+              Add Assignment
+            </div>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -119,27 +119,42 @@ const UploadAssignmentAction = () => {
     
            
     
-                <div>
-                <FormLabel>Questions</FormLabel>
-                {fields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                    <Input
-                        placeholder={`Question ${index + 1}`}
-                        {...form.register(`questions.${index}.question`)}
-                    />
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => remove(index)}
-                    >
-                        <Trash />
-                    </Button>
-                    </div>
-                ))}
-                <Button type="button" onClick={() => append({ question: '' })} className="mt-2">
-                    <Plus /> Add Question
-                </Button>
-                </div>
+               <div>
+  <FormLabel>Questions</FormLabel>
+  <div className="max-h-40 overflow-y-auto space-y-4">
+    {fields.map((field, index) => (
+      <div key={field.id} className="flex items-center gap-2">
+        <Input
+          placeholder={`Question ${index + 1}`}
+          {...form.register(`questions.${index}.question`)}
+          className="flex-1"
+        />
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={() => remove(index)}
+          className="ml-2"
+        >
+          <Trash />
+        </Button>
+      </div>
+    ))}
+  </div>
+  <Button type="button" onClick={() => {
+       const lastQuestion = form.getValues().questions[fields.length - 1]?.question;
+
+       // Check if the last question is not empty before appending a new one
+       if (lastQuestion && lastQuestion.trim() !== '') {
+           append({ question: '' });
+       } else if (lastQuestion === undefined || lastQuestion.trim() === '') {
+           toast.error('Please fill in the current question before adding a new one.');
+       }
+       
+  }} className="mt-2">
+    <Plus /> Add Question
+  </Button>
+</div>
+
 
     
                 <Button type="submit" disabled={form.formState.isSubmitting}>
