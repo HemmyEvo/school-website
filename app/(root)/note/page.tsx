@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import UploadAction from '@/app/_component/UploadAction';
 import UploadNoteAction from '@/app/_component/UploadNote';
+import Link from 'next/link';
 
 const Note = () => {
   const admin = true; // Update this based on the database
@@ -155,13 +156,13 @@ const Note = () => {
                 {note.timePosted}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                <a
+                <Link
                   href={note.imageUrl}
                   download
                   className="text-blue-500 underline hover:text-blue-700"
                 >
                   Download Image
-                </a>
+                </Link>
               </td>
               
             </tr>

@@ -11,6 +11,7 @@ import { api } from '@/convex/_generated/api';
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import UploadAssignmentAction from '@/app/_component/UploadAssignment';
+import Link from 'next/link';
 
 type Props = {};
 
@@ -163,9 +164,9 @@ const Assignment = (props: Props) => {
                 <td className="border border-gray-300 px-4 py-2">{new Date(assignment._creationTime).toLocaleDateString()}</td>
                 <td className="border border-gray-300 px-4 py-2">{new Date(assignment._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <a href="#" className="text-blue-500 underline hover:text-blue-700">
+                  <Link href="#" className="text-blue-500 underline hover:text-blue-700">
                     View Solution
-                  </a>
+                  </Link>
                 </td>
               </tr>
             ))}

@@ -168,12 +168,12 @@ const Shop = (props: Props) => {
                   {manual.deadline}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <a
+                  <Link
                     href={manual.link}
                     className="text-blue-500 underline hover:text-blue-700"
                   >
                     Buy Now
-                  </a>
+                  </Link>
                 </td>
               </tr>
             ))}
