@@ -29,7 +29,7 @@ const Header = (props: Props) => {
   return (
     <div className='w-full h-14 bg-[#996c47] flex relative  px-4 items-center justify-between shadow-2xl rounded-br-2xl rounded-bl-2xl '>
         <div className="logo">
-            <div className=" text-xl font-semibold cursor-pointer"><a href="/"> Class'27 portal</a></div>
+            <div className=" text-xl font-semibold cursor-pointer"><Link href="/"> Class&apos;27 portal</Link></div>
         </div>
         <div className="setting flex items-center space-x-4 pr-5">
             <div className="avatar cursor-pointer">
