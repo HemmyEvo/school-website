@@ -32,9 +32,9 @@ const AboutMe = (props: Props) => {
 
           {/* Contact Section */}
           <div className="bg-white p-8 rounded-lg shadow-lg">
-            <p className="text-lg text-gray-700 font-semibold">Let’s Connect</p>
+            <p className="text-lg text-gray-700 font-semibold">Let&rsquo;s Connect</p>
             <p className="text-sm text-gray-600 mt-2 mb-4">
-              I’m always open to conversations, collaborations, or simply sharing ideas. If you'd like to reach out, you can contact me directly on WhatsApp:
+              I&rsquo;m always open to conversations, collaborations, or simply sharing ideas. If you&apos;d like to reach out, you can contact me directly on WhatsApp:
               <Link href="https://wa.link/endaa" target="_blank" className="text-blue-600 underline hover:text-blue-800">
                 WhatsApp Me
               </Link>
@@ -45,7 +45,7 @@ const AboutMe = (props: Props) => {
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <p className="text-lg text-gray-700 font-semibold">Who Am I?</p>
             <p className="text-sm text-gray-600 mt-2 mb-4">
-              Hi, I'm Emmanuel, a Full-Stack Developer and the founder of Hemmyevo. I'm passionate about technology and problem-solving. My journey as a developer started with a fascination for coding and grew into a mission to create technology solutions that can change the world.
+              Hi, I&apos;m Emmanuel, a Full-Stack Developer and the founder of Hemmyevo. I&apos;m passionate about technology and problem-solving. My journey as a developer started with a fascination for coding and grew into a mission to create technology solutions that can change the world.
             </p>
             <p className="text-sm text-gray-600 mb-4">
               As a student, I balance my academic pursuits with my work as a developer. My role as a Full-Stack Developer allows me to engage with both the front-end and back-end of applications, ensuring efficient and scalable solutions that meet user needs.
@@ -59,10 +59,10 @@ const AboutMe = (props: Props) => {
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <p className="text-lg text-gray-700 font-semibold">My Interests</p>
             <p className="text-sm text-gray-600 mt-2 mb-4">
-              When I’m not coding, you’ll likely find me solving puzzles or exploring new technologies. I’m passionate about learning and constantly seek ways to expand my knowledge, both professionally and personally.
+              When I&rsquo;m not coding, you&rsquo;ll likely find me solving puzzles or exploring new technologies. I&rsquo;m passionate about learning and constantly seek ways to expand my knowledge, both professionally and personally.
             </p>
             <p className="text-sm text-gray-600">
-              I believe in growth, and I’m always striving to improve myself while building solutions that have a positive impact on society.
+              I believe in growth, and I&rsquo;m always striving to improve myself while building solutions that have a positive impact on society.
             </p>
           </div>
 
