@@ -9,39 +9,16 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import UploadManual from '@/app/_component/UploadShop';
 
 type Props = {};
 
 const Shop = (props: Props) => {
-  const admin = true; // Update this admin base on the database
-
-  const manuals = [
-    {
-      courseCode: 'AG101',
-      name: 'Climate Change and Agriculture',
-      price: '$10.00',
-      datePosted: '2024-12-10',
-      deadline: '2024-12-20',
-      link: '#',
-    },
-    {
-      courseCode: 'CSC103',
-      name: 'Introduction to Programming',
-      price: '$15.00',
-      datePosted: '2024-12-11',
-      deadline: '2024-12-25',
-      link: '#',
-    },
-    {
-      courseCode: 'AG101',
-      name: 'Soil Preparation Techniques',
-      price: '$12.50',
-      datePosted: '2024-12-12',
-      deadline: '2024-12-22',
-      link: '#',
-    },
-    // Add more manuals...
-  ];
+ const me = useQuery(api.user.getMe);
+  const admin = true;
+  const manuals = useQuery(api.getting.getShopItems) || [];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDate, setFilterDate] = useState<Date | null>(null);
@@ -50,14 +27,16 @@ const Shop = (props: Props) => {
   const itemsPerPage = 5;
 
   const filteredManuals = manuals.filter((manual) => {
+    const creationDate = new Date(manual._creationTime);
+    const datePosted = creationDate.toLocaleDateString();
     const matchesSearch = manual.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDate = filterDate
-      ? manual.datePosted === format(filterDate, 'yyyy-MM-dd')
-      : true;
+          ? datePosted === format(filterDate, 'yyyy-MM-dd')
+          : true;
     const matchesCourseCode = filterCourseCode
-      ? manual.courseCode === filterCourseCode
+      ? manual.course === filterCourseCode
       : true;
     return matchesSearch && matchesDate && matchesCourseCode;
   });
@@ -79,11 +58,8 @@ const Shop = (props: Props) => {
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-bold">Buy Manuals</p>
         {admin && (
-          <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
-            <PlusCircle />
-            Add Manual
-          </button>
-        )} {/* upload file action */}
+         <UploadManual />
+        )} 
       </div>
 
       <div className="mb-4 flex flex-wrap gap-4">
@@ -117,7 +93,7 @@ const Shop = (props: Props) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Courses</SelectItem>
-            {[...new Set(manuals.map((m) => m.courseCode))].map((code) => (
+            {[...new Set(manuals.map((m) => m.course))].map((code) => (
               <SelectItem key={code} value={code}>
                 {code}
               </SelectItem>
@@ -154,7 +130,7 @@ const Shop = (props: Props) => {
             {paginatedManuals.map((manual, index) => (
               <tr key={index} className="hover:bg-gray-50">
                 <td className="border border-gray-300 px-4 py-2">
-                  {manual.courseCode}
+                  {manual.course}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {manual.name}
@@ -163,14 +139,14 @@ const Shop = (props: Props) => {
                   {manual.price}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {manual.datePosted}
+                  {new Date(manual._creationTime).toLocaleDateString()}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {manual.deadline}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <Link
-                    href={manual.link}
+                    href={manual.url}
                     className="text-blue-500 underline hover:text-blue-700"
                   >
                     Buy Now

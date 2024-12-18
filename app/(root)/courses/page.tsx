@@ -10,8 +10,9 @@ import { Trash } from 'lucide-react';
 type Props = {};
 
 const Courses = (props: Props) => {
-  const admin = true; // Update this admin base on the database
-
+   const me = useQuery(api.user.getMe);
+    const admin = me?.admin;
+    
   // Fetch courses from Convex
   const courses = useQuery(api.getting.getCourses) || [];
 

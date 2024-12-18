@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
-import UploadAction from '@/app/_component/UploadAction';
+import UploadAction from '@/app/_component/UploadShop';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import UploadAnnouncementAction from '@/app/_component/UploadAnnouncement';

@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/ui/theme/ThemeProvider";
 import {ConvexClientProvider} from "@/provider/ConvexProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {Toaster} from "react-hot-toast"
-import Header from "./_component/Header";
-import Footer from "@/components/shared/Footer";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -21,6 +19,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Class'27 Portal",
   description: "Website for lautech class'27",
+  icons: {
+    icon: "/favicon.png",
+  }
 };
 
 export default function RootLayout({

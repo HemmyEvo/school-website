@@ -140,9 +140,9 @@ const Page = () => {
       <form onSubmit={handleSubmit} className="max-w-sm w-lvw p-4 bg-[#b1b1b1] rounded-[10px] dark:bg-[#202020] shadow-md shadow-[#3b3b3b] mx-auto">
       <div className="logo mb-7 text-center">
        
-       {/* <h1 className="text-xl font-semibold flex items-center justify-center">
-         <span> <Image src="/favicon.ico" alt="Hemmyevo" width={50} height={50} /></span>   
-       </h1> */}
+       <h1 className="text-xl font-semibold flex items-center justify-center">
+         <span> <Image src="/favicon.png" alt="Hemmyevo" width={50} height={50} /></span>   
+       </h1>
        <p className="tracking-widest mt-2 font-bold">HemmyEvo</p>
      </div>
         {error && (

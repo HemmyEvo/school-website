@@ -8,16 +8,15 @@ import React from 'react'
 const page = () => {
   const lists = [
     {icon:<BookUserIcon className='w-full h-full'/>,label:'List of course', link:'/courses'},
-    {icon:<UserRoundCheck className='w-full h-full'/>,label:'My Profile', link:''},
-    {icon:<Settings2 className='w-full h-full'/>,label:'Settings', link:''},
+    {icon:<UserRoundCheck className='w-full h-full'/>,label:'My Profile', link:'/profile'},
     {icon:<ShoppingCart className='w-full h-full'/>,label:'Buy manual', link:'/shop'},
-    {icon:<UserSquare className='w-full h-full'/>,label:'About Hemmyevo', link:''},
+    {icon:<UserSquare className='w-full h-full'/>,label:'About Hemmyevo', link:'/about'},
   ]
   const me = useQuery(api.user.getMe)
   return (
     <div className=" h-full flex flex-col p-3 w-full">
       <div className='flex justify-between items-center flex-col sm:flex-row'>
-        <p>Welcome back, {me?.name?.split(" ")[1]}</p>
+        <p>Welcome back, {me?.name}</p>
         <p>Matric No: {me?.username.slice(3)}</p>
       </div>
     <div className='bg-[#996c4796] mt-5 rounded-lg'>

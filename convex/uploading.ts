@@ -38,6 +38,40 @@ export const uploadNote = mutation({
       });
     },
   })
+
+export const updateProfile = mutation({
+  args: {
+    name: v.string(),
+    matricNumber: v.string(),
+    image: v.id("_storage"), // The profile image as a storage ID
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Log in to update your profile");
+    }
+
+    // Get the current user
+    const userId = identity.subject;
+    
+    // Retrieve the existing user profile
+    const user = await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), userId)).unique();
+    
+    if (!user) {
+      throw new ConvexError("User not found in the database");
+    }
+    const url = await ctx.storage.getUrl(args.image);
+    // Update the user's profile
+    await ctx.db
+      .patch(user._id,{
+          name: args.name,
+          username: args.matricNumber,
+          image: url!, 
+      })
+      
+    return { success: true };
+  },
+});
 export const uploadCourse = mutation({
     args:{
 		course: v.string(),
@@ -170,6 +204,8 @@ export const uploadShop = mutation({
         price: v.number(),
         course: v.string(),
         url: v.string(),
+        name: v.string(),
+        deadline:v.string()
     },
     async handler(ctx, args) {
         const identity = await ctx.auth.getUserIdentity()

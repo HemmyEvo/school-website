@@ -31,12 +31,8 @@ export const getAnnouncements = query({
 });
 
 export const getShopItems = query({
-    args: {
-        courseCode: v.string()
-    },
+    args: {},
     async handler(ctx, args) {
-        return await ctx.db.query("shop")
-            .filter(q => q.eq(q.field("course"), args.courseCode))
-            .collect();
+        return await ctx.db.query("shop").order("desc").collect();
     }
 });

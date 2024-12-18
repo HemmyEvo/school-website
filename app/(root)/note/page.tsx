@@ -26,7 +26,6 @@ const Note = () => {
   const [filterDate, setFilterDate] = useState<Date | null>(null);
   const [filterCourseCode, setFilterCourseCode] = useState('');
   let [currentPage, setCurrentPage] = useState(1);
-  const [editingNote, setEditingNote] = useState<any | null>(null);  // State to manage editing
   const itemsPerPage = 5;
 
   const filteredNotes = notes.filter((note) => {

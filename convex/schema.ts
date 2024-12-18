@@ -31,6 +31,8 @@ export default defineSchema({
 	shop:defineTable({
 		course:v.string(),
 		price:v.number(),
-		url:v.string()
+		url:v.string(),
+		name:v.string(),
+		deadline:v.string()
 	})
 });

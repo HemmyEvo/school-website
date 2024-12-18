@@ -127,7 +127,7 @@ const ForgotPassword: NextPage = () => {
             <div className="logo mb-7 text-center">
        
        <h1 className="text-xl font-semibold flex items-center justify-center">
-         <span> <Image src="/favicon.ico" alt="Hemmyevo" width={50} height={50} /></span>
+         <span> <Image src="/favicon.png" alt="Hemmyevo" width={50} height={50} /></span>
          
        </h1>
        <p className="tracking-widest mt-2 font-bold">HemmyEvo</p>
