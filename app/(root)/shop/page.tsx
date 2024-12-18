@@ -17,7 +17,7 @@ type Props = {};
 
 const Shop = (props: Props) => {
  const me = useQuery(api.user.getMe);
-  const admin = true;
+  const admin = me?.admin;
   const manuals = useQuery(api.getting.getShopItems) || [];
 
   const [searchQuery, setSearchQuery] = useState('');
