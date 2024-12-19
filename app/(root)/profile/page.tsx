@@ -66,7 +66,7 @@ const Profile: React.FC = () => {
         <Avatar className="w-40 h-40 relative">
           <label
             htmlFor="file-upload"
-            className="absolute cursor-pointer flex justify-center items-center rounded-full overflow-hidden bottom-2 right-4 z-40 bg-white h-10 w-10"
+            className="absolute cursor-pointer flex justify-center items-center rounded-full overflow-hidden bottom-2 right-4 bg-white h-10 w-10"
           >
             <Edit3 />
           </label>
