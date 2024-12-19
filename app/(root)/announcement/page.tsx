@@ -105,25 +105,36 @@ const Announcement = () => {
         </Select>
       </div>
 
-      <ul className="list-none space-y-4">
-        {paginatedAnnouncements.map((announcement, index) => (
-          <li key={index} className="border border-gray-300 p-4 rounded shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800">
-              {announcement.title}
-            </h3>
-            <p className="text-gray-600 mt-2">
-              {announcement.description}
-            </p>
-            <div className="text-sm text-gray-500 mt-2">
-              <p>Time: {}</p>
-              <p>Venue: </p>
-              <p>Attachment: </p>
-              <p>Course Code: {announcement.courseCode}</p>
-              <p>Posted on: {formatDate(announcement._creationTime)}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <ul className="space-y-6">
+  {paginatedAnnouncements.map((announcement, index) => (
+    <li 
+      key={index} 
+      className="border border-gray-200 rounded-lg shadow-lg p-6 bg-gradient-to-r from-white via-gray-50 to-white hover:shadow-xl transition-shadow duration-200"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <h3 className="text-xl font-bold text-gray-900 transition-colors duration-300 hover:text-indigo-600">
+          {announcement.title}
+        </h3>
+        <span className="text-sm text-gray-500">
+          {formatDate(announcement._creationTime)}
+        </span>
+      </div>
+      <p className="text-gray-700 leading-relaxed mb-4">
+        {announcement.description}
+      </p>
+      <div className="text-sm text-gray-600 grid grid-cols-2 gap-4">
+        <div>
+          <p><strong>Time:</strong> {"N/A"}</p>
+          <p><strong>Venue:</strong> { "N/A"}</p>
+        </div>
+        <div>
+          <p><strong>Attachment:</strong> {"None"}</p>
+          <p><strong>Course Code:</strong> {announcement.courseCode}</p>
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
 
       <div className="flex justify-between items-center mt-4">
         <button
