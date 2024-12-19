@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { PlusCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { DatabaseIcon, PlusCircle } from 'lucide-react';
+import { cn, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,12 +30,11 @@ const Announcement = () => {
   const filteredAnnouncements = fetchedAnnouncements.filter((announcement) => {
     const creationDate = new Date(announcement._creationTime);
     const datePosted = creationDate.toLocaleDateString(); 
-    const timePosted = creationDate.toLocaleTimeString();
     const matchesSearch = announcement.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDate = filterDate
-      ? datePosted === format(filterDate, 'yyyy-MM-dd')
+      ? datePosted === format(filterDate, 'MM/dd/yyyy')
       : true;
     const matchesCourseCode = filterCourseCode
       ? announcement.courseCode === filterCourseCode || announcement.courseCode === 'ALL'
@@ -116,9 +115,11 @@ const Announcement = () => {
               {announcement.description}
             </p>
             <div className="text-sm text-gray-500 mt-2">
-              <p>Posted on: {new Date(announcement._creationTime).toLocaleDateString()}</p>
-              <p>Time: {new Date(announcement._creationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+              <p>Time: {}</p>
+              <p>Venue: </p>
+              <p>Attachment: </p>
               <p>Course Code: {announcement.courseCode}</p>
+              <p>Posted on: {formatDate(announcement._creationTime)}</p>
             </div>
           </li>
         ))}

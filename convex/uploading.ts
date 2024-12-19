@@ -61,10 +61,9 @@ export const uploadNote = mutation({
 })
 
 
-export const updateProfile = mutation({
+export const updateImage = mutation({
   args: {
-    name: v.string(),
-    matricNumber: v.string(),
+    user:v.id("users"),
     image: v.id("_storage"), // The profile image as a storage ID
   },
   async handler(ctx, args) {
@@ -73,11 +72,10 @@ export const updateProfile = mutation({
       throw new ConvexError("Log in to update your profile");
     }
 
-    // Get the current user
-    const userId = identity.subject;
+
     
     // Retrieve the existing user profile
-    const user = await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), userId)).unique();    
+    const user = await ctx.db.query("users").filter((q) => q.eq(q.field("_id"), args.user)).unique();    
     if (!user) {
       throw new ConvexError("User not found in the database");
     }
@@ -85,12 +83,9 @@ export const updateProfile = mutation({
     // Update the user's profile
     await ctx.db
       .patch(user._id,{
-          name: args.name,
-          username: args.matricNumber,
           image: url!, 
       })
       
-    return { success: true };
   },
 });
 export const uploadCourse = mutation({
