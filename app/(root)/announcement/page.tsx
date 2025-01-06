@@ -31,7 +31,7 @@ const Announcement = () => {
     return matchesSearch && matchesDate;
   });
 
-  const toggleDescriptionView = (index: number) => {
+  const toggleDescriptionView = (index: number): void => {
     if (expandedDescriptions.includes(index)) {
       setExpandedDescriptions(expandedDescriptions.filter((i) => i !== index));
     } else {
@@ -96,7 +96,7 @@ const Announcement = () => {
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Announcement type</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Course Code</th>
-              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Description</th>
+              <th className="border border-gray-300 px-4 py-2 text-center text-gray-600">Description</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Venue</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Attachment</th>
               {admin && <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Actions</th>}
@@ -108,7 +108,7 @@ const Announcement = () => {
                 <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
                 <td className="border border-gray-300 px-4 py-2">{announcement.title || 'none'}</td>
                 <td className="border border-gray-300 px-4 py-2">{announcement.courseCode || 'none'}</td>
-                <td className="border border-gray-300 px-4 py-2 w-[50%]">
+                <td className="border border-gray-300 px-4 py-2 whitespace-pre-wrap min-w-[300px]">
                   {announcement.description && announcement.description.length > 100 ? (
                     expandedDescriptions.includes(index) ? (
                       <>
