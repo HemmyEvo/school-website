@@ -108,7 +108,7 @@ const Announcement = () => {
                 <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
                 <td className="border border-gray-300 px-4 py-2">{announcement.title || 'none'}</td>
                 <td className="border border-gray-300 px-4 py-2">{announcement.courseCode || 'none'}</td>
-                <td className="border border-gray-300 px-4 py-2 whitespace-pre-wrap">
+                <td className="border border-gray-300 px-4 py-2 w-[50%]">
                   {announcement.description && announcement.description.length > 100 ? (
                     expandedDescriptions.includes(index) ? (
                       <>
