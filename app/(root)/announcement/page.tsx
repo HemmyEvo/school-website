@@ -25,7 +25,9 @@ const Announcement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const filteredAnnouncements = fetchedAnnouncements.filter((announcement) => {
     const creationDate = new Date(announcement._creationTime);
-    const datePosted = creationDate.toLocaleDateString();
+    const datePosted = creationDate.toLocaleDateString()
+    console.log(datePosted)
+    filterDate && console.log(format(filterDate, 'M/d/yyyy'))
     const matchesSearch = announcement?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false;
     const matchesDate = filterDate ? datePosted === format(filterDate, 'M/d/yyyy') : true;
     return matchesSearch && matchesDate;
