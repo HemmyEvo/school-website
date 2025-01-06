@@ -35,7 +35,7 @@ const Note = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDate = filterDate
-      ? datePosted === format(filterDate, 'M/d/yyyy')
+      ? datePosted === format(filterDate, 'dd/MM/yyyy')
       : true;
     const matchesCourseCode = filterCourseCode
       ? note.courseCode === filterCourseCode || note.courseCode === 'ALL'

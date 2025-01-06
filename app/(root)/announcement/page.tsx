@@ -29,7 +29,7 @@ const Announcement = () => {
     console.log(datePosted)
     filterDate && console.log(format(filterDate, 'MM/dd/yyyy'))
     const matchesSearch = announcement?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false;
-    const matchesDate = filterDate ? datePosted === format(filterDate, 'MM/d/yyyy') : true;
+    const matchesDate = filterDate ? datePosted === format(filterDate, 'dd/MM/yyyy') : true;
     return matchesSearch && matchesDate;
   });
 

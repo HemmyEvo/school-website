@@ -32,7 +32,7 @@ const Shop = (props: Props) => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDate = filterDate
-          ? datePosted === format(filterDate, 'M/d/yyyy')
+          ? datePosted === format(filterDate, 'dd/MM/yyyy')
           : true;
     const matchesCourseCode = filterCourseCode
       ? manual.course === filterCourseCode

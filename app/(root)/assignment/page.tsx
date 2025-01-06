@@ -44,7 +44,7 @@ const Assignment = (props: Props) => {
     const creationDate = new Date(assignment._creationTime);
     const datePosted = creationDate.toLocaleDateString(); 
      const matchesDate = filterDate
-         ? datePosted === format(filterDate, 'M/d/yyyy')
+         ? datePosted === format(filterDate, 'dd/MM/yyyy')
          : true;
     const matchesCourseCode = filterCourseCode
       ? assignment.courseCode === filterCourseCode
