@@ -47,7 +47,9 @@ const UploadCourse = () => {
     },
     mode: 'onChange',
   });
-
+  React.useEffect(() => {
+  !isFileDialogOpen &&  form.reset();
+  }, [isFileDialogOpen])
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createFile({

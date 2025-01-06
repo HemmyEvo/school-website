@@ -1,66 +1,66 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { DatabaseIcon, PlusCircle } from 'lucide-react';
-import { cn, formatDate } from '@/lib/utils';
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
-import UploadAction from '@/app/_component/UploadShop';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import UploadAnnouncementAction from '@/app/_component/UploadAnnouncement';
-
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Trash } from 'lucide-react';
 
 const Announcement = () => {
-  const me = useQuery(api.user.getMe)
-  const admin = me?.admin; // Update this based on the database
+  const me = useQuery(api.user.getMe);
+  const admin = me?.admin;
 
-  // Fetch announcements from Convex
   const fetchedAnnouncements = useQuery(api.getting.getAnnouncements) || [];
-
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDate, setFilterDate] = useState<Date | null>(null);
-  const [filterCourseCode, setFilterCourseCode] = useState('');
-  let [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
+  const [expandedDescriptions, setExpandedDescriptions] = useState<number[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const filteredAnnouncements = fetchedAnnouncements.filter((announcement) => {
     const creationDate = new Date(announcement._creationTime);
-    const datePosted = creationDate.toLocaleDateString(); 
-    const matchesSearch = announcement.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesDate = filterDate
-      ? datePosted === format(filterDate, 'MM/dd/yyyy')
-      : true;
-    const matchesCourseCode = filterCourseCode
-      ? announcement.courseCode === filterCourseCode || announcement.courseCode === 'ALL'
-      : true;
-    return matchesSearch && matchesDate && matchesCourseCode;
+    const datePosted = creationDate.toLocaleDateString();
+    const matchesSearch = announcement?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false;
+    const matchesDate = filterDate ? datePosted === format(filterDate, 'MM/dd/yyyy') : true;
+    return matchesSearch && matchesDate;
   });
 
+  const toggleDescriptionView = (index: number) => {
+    if (expandedDescriptions.includes(index)) {
+      setExpandedDescriptions(expandedDescriptions.filter((i) => i !== index));
+    } else {
+      setExpandedDescriptions([...expandedDescriptions, index]);
+    }
+  };
+
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedAnnouncements = filteredAnnouncements.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedAnnouncements = filteredAnnouncements.slice(startIndex, startIndex + itemsPerPage);
 
   let totalPages = Math.ceil(filteredAnnouncements.length / itemsPerPage);
   if (totalPages === 0) {
-    currentPage = 1;
     totalPages = 1;
   }
+
+  const deleteManual = useMutation(api.uploading.deleteAnnouncement);
+  const handleDelete = async (noteId: string) => {
+    try {
+      await deleteManual({ noteId });
+    } catch (error) {
+      alert('Error deleting note');
+    }
+  };
 
   return (
     <div className="h-full flex flex-col p-3 w-full">
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-bold">Announcements</p>
-        {admin && (
-          <UploadAnnouncementAction />
-        )} {/* Add announcement action */}
+        {admin && <UploadAnnouncementAction />}
       </div>
 
       <div className="mb-4 flex flex-wrap gap-4">
@@ -87,54 +87,86 @@ const Announcement = () => {
             />
           </PopoverContent>
         </Popover>
+      </div>
 
-        <Select
-          onValueChange={(value) => setFilterCourseCode(value === 'all' ? '' : value)}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select Course" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courses</SelectItem>
-            {[...new Set(fetchedAnnouncements.map((a) => a.courseCode))].map((code) => (
-              <SelectItem key={code} value={code}>
-                {code}
-              </SelectItem>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-sm sm:text-base border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Announcement type</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Course Code</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Description</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Venue</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Attachment</th>
+              {admin && <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Actions</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedAnnouncements.map((announcement, index) => (
+              <tr key={index} className="hover:bg-gray-50 hover:dark:bg-gray-900">
+                <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
+                <td className="border border-gray-300 px-4 py-2">{announcement.title || 'none'}</td>
+                <td className="border border-gray-300 px-4 py-2">{announcement.courseCode || 'none'}</td>
+                <td className="border border-gray-300 px-4 py-2 whitespace-pre-wrap">
+                  {announcement.description && announcement.description.length > 100 ? (
+                    expandedDescriptions.includes(index) ? (
+                      <>
+                        {announcement.description}
+                        <button
+                          onClick={() => toggleDescriptionView(index)}
+                          className="text-blue-500 underline hover:text-blue-700 ml-2"
+                        >
+                          View Less
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {announcement.description.slice(0, 100)}...
+                        <button
+                          onClick={() => toggleDescriptionView(index)}
+                          className="text-blue-500 underline hover:text-blue-700 ml-2"
+                        >
+                          View More
+                        </button>
+                      </>
+                    )
+                  ) : (
+                    announcement.description
+                  )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">{announcement.venue || 'none'}</td>
+                <td className="border border-gray-300 px-4 py-2">{announcement.attachment || 'none'}</td>
+                {admin && (
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger>
+                        <Button variant="outline" className="text-red-500">
+                          <Trash className="mr-2" /> Delete
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>Confirm Deletion</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to permanently delete this entry? This action cannot be undone and the data will be removed from the database.
+                        </DialogDescription>
+                        <DialogFooter>
+                        <Button onClick={async () => { await handleDelete(announcement._id); setIsDialogOpen(false); }} className="bg-red-500 text-white">
+                            Yes, Delete
+                          </Button>
+                          <DialogClose>
+                            <Button variant="outline" className="text-gray-500">Cancel</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </td>
+                )}
+              </tr>
             ))}
-          </SelectContent>
-        </Select>
+          </tbody>
+        </table>
       </div>
-
-      <ul className="space-y-6">
-  {paginatedAnnouncements.map((announcement, index) => (
-    <li 
-      key={index} 
-      className="border border-gray-200 rounded-lg shadow-lg p-6 bg-gradient-to-r from-white via-gray-50 to-white hover:shadow-xl transition-shadow duration-200"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-xl font-bold text-gray-900 transition-colors duration-300 hover:text-indigo-600">
-          {announcement.title}
-        </h3>
-        <span className="text-sm text-gray-500">
-          {formatDate(announcement._creationTime)}
-        </span>
-      </div>
-      <p className="text-gray-700 leading-relaxed mb-4">
-        {announcement.description}
-      </p>
-      <div className="text-sm text-gray-600 grid grid-cols-2 gap-4">
-        <div>
-          <p><strong>Time:</strong> {"N/A"}</p>
-          <p><strong>Venue:</strong> { "N/A"}</p>
-        </div>
-        <div>
-          <p><strong>Attachment:</strong> {"None"}</p>
-          <p><strong>Course Code:</strong> {announcement.courseCode}</p>
-        </div>
-      </div>
-    </li>
-  ))}
-</ul>
 
       <div className="flex justify-between items-center mt-4">
         <button

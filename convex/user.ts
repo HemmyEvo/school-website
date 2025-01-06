@@ -41,3 +41,23 @@ export const getMe = query({
 	},
 });
 
+export const getUser = query({
+	args: {},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError("Unauthorized");
+		}
+
+		const user = await ctx.db
+			.query("users")
+			.collect()
+
+		if (!user) {
+			throw new ConvexError("User not found");
+		}
+
+		return user;
+	},
+});
+

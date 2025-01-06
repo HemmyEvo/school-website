@@ -118,19 +118,28 @@ export const uploadAssignment = mutation({
 })
 export const uploadAnnouncement = mutation({
     args:{
-        title: v.string(),
-        description: v.string(),
-        course: v.string(),
+        attachment: v.optional(v.id("_storage")),
+        description: v.optional(v.string()),
+        course: v.optional(v.string()),
+        venue: v.optional(v.string()),
+        title: v.optional(v.string())
     },
     async handler(ctx, args) {
         const identity = await ctx.auth.getUserIdentity()
         if (!identity){
             throw new ConvexError("Log in to Upload a file")
         }
+        let url = null;
+        if (args.attachment) {
+            url = await ctx.storage.getUrl(args.attachment);
+            if (!url) throw new ConvexError("Failed to generate file URL");
+        }
         await ctx.db.insert("announcement", {
-        title: args.title,
+        attachment: url!,
         description: args.description,
         courseCode: args.course,
+        title: args.title,
+        venue: args.venue
     })
         
     }

@@ -55,7 +55,9 @@ const UploadManual = () => {
     },
     mode: 'onChange',
   });
-
+  React.useEffect(() => {
+  !isFileDialogOpen &&  form.reset();
+  }, [isFileDialogOpen])
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Ensure that the deadline is selected before submitting
     if (!filterDate) {

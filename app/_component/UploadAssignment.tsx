@@ -43,7 +43,9 @@ const UploadAssignmentAction = () => {
     },
   });
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'questions' });
-
+      React.useEffect(() => {
+      !isFileDialogOpen &&  form.reset();
+      }, [isFileDialogOpen])
   const onSubmit = async (values: any) => {
     try {
       const questions = values.questions?.map((q: any) => q.question);

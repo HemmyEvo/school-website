@@ -50,7 +50,9 @@ const UploadNoteAction = () => {
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
-
+React.useEffect(() => {
+  !isFileDialogOpen &&  form.reset();
+  }, [isFileDialogOpen])
   const onSubmit = async (values: any) => {
     try {
       if (images.length === 0) {

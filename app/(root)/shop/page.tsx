@@ -120,6 +120,7 @@ const Shop = (props: Props) => {
         <table className="min-w-full border-collapse border border-gray-200 text-sm sm:text-base">
           <thead>
             <tr className="bg-gray-100">
+            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">
                 Course Code
               </th>
@@ -148,6 +149,7 @@ const Shop = (props: Props) => {
           <tbody>
             {paginatedManuals.map((manual, index) => (
               <tr key={index} className="hover:bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2">{startIndex + index + 1}</td>
                 <td className="border border-gray-300 px-4 py-2">{manual.course}</td>
                 <td className="border border-gray-300 px-4 py-2">{manual.name}</td>
                 <td className="border border-gray-300 px-4 py-2">

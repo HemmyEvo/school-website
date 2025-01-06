@@ -1,13 +1,14 @@
 'use client'
 import { api } from '@/convex/_generated/api'
 import { useQuery } from 'convex/react'
-import {  BookUserIcon, Settings2, ShoppingCart, UserRoundCheck, UserSquare } from 'lucide-react'
+import {  BookUserIcon,  ShoppingCart, User2, UserPlus2, UserRoundCheck, UserSquare } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 const page = () => {
   const lists = [
     {icon:<BookUserIcon className='w-full h-full'/>,label:'List of course', link:'/courses'},
+    {icon:<UserPlus2 className='w-full h-full'/>,label:'View Classmates', link:'/classmate'},
     {icon:<UserRoundCheck className='w-full h-full'/>,label:'My Profile', link:'/profile'},
     {icon:<ShoppingCart className='w-full h-full'/>,label:'Buy manual', link:'/shop'},
     {icon:<UserSquare className='w-full h-full'/>,label:'About Hemmyevo', link:'/about'},

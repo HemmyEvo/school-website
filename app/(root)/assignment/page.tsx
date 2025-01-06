@@ -125,6 +125,7 @@ const Assignment = (props: Props) => {
         <table className="min-w-full border-collapse text-sm sm:text-base border border-gray-200">
           <thead>
             <tr className="bg-gray-100">
+            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Course Code</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Assignment Question</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Date Posted</th>
@@ -136,6 +137,7 @@ const Assignment = (props: Props) => {
           <tbody>
             {paginatedAssignments.map((assignment, index) => (
               <tr key={index} className="hover:bg-gray-50 hover:dark:bg-gray-900">
+                <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
                 <td className="border border-gray-300 px-4 py-2">{assignment.courseCode}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   {expandedQuestions.includes(index) ? (

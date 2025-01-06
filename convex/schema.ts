@@ -24,9 +24,11 @@ export default defineSchema({
 		question:v.array(v.string())
 	}),
 	announcement:defineTable({
-		title:v.string(),
-		description:v.string(),
-		courseCode:v.string()
+		attachment:v.union(v.string(), v.null()),
+		description:v.optional(v.string()),
+		courseCode:v.optional(v.string()),
+		venue:v.optional(v.string()),
+		title:v.optional(v.string())
 	}),
 	shop:defineTable({
 		course:v.string(),
