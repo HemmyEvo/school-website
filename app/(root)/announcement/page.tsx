@@ -27,9 +27,9 @@ const Announcement = () => {
     const creationDate = new Date(announcement._creationTime);
     const datePosted = creationDate.toLocaleDateString()
     console.log(datePosted)
-    filterDate && console.log(format(filterDate, 'M/d/yyyy'))
+    filterDate && console.log(format(filterDate, 'MM/dd/yyyy'))
     const matchesSearch = announcement?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false;
-    const matchesDate = filterDate ? datePosted === format(filterDate, 'M/d/yyyy') : true;
+    const matchesDate = filterDate ? datePosted === format(filterDate, 'MM/d/yyyy') : true;
     return matchesSearch && matchesDate;
   });
 
