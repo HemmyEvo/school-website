@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {
-                hostname: "exciting-marlin-134.convex.cloud",
+                hostname: "unique-raven-73.convex.cloud",
             },
         ],
     },

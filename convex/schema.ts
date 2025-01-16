@@ -10,6 +10,15 @@ export default defineSchema({
 		tokenIdentifier: v.string(),
 		admin: v.boolean(),
 	}).index("by_tokenIdentifier", ["tokenIdentifier"]),
+	conversation: defineTable({
+		participant: v.array(v.id("users"))
+	}),
+	message: defineTable({
+		conversation: v.id("conversation"),
+		sender: v.string(),
+		content: v.string(),
+		messageType: v.union(v.literal("text"), v.literal("image"), v.literal("video"), v.literal("audio")),
+	}).index("by_conversation", ["conversation"]),
 	courses: defineTable({
 		course: v.string(),
 		unit: v.number()

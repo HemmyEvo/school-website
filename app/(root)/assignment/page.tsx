@@ -125,7 +125,7 @@ const Assignment = (props: Props) => {
         <table className="min-w-full border-collapse text-sm sm:text-base border border-gray-200">
           <thead>
             <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
+              <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Course Code</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Assignment Question</th>
               <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Date Posted</th>
@@ -138,8 +138,8 @@ const Assignment = (props: Props) => {
             {paginatedAssignments.map((assignment, index) => (
               <tr key={index} className="hover:bg-gray-50 hover:dark:bg-gray-900">
                 <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                <td className="border border-gray-300 px-4 py-2">{assignment.courseCode}</td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 min-w-[100px]">{assignment.courseCode}</td>
+                <td className="border border-gray-300 px-4 min-w-[400px] whitespace-pre-wrap py-2">
                   {expandedQuestions.includes(index) ? (
                     <>
                       {assignment.question.map((line: string, lineIndex: number) => (
@@ -157,9 +157,9 @@ const Assignment = (props: Props) => {
                   ) : (
                     <>
                     
-                      {assignment.question.slice(0, 2).map((line: string, lineIndex: number) => (
+                      {assignment.question.slice(0, 1).map((line: string, lineIndex: number) => (
                         <p key={lineIndex} className="mb-1">
-                          {lineIndex + 1}. {line}
+                          {lineIndex + 1}. {line.length > 50 ? line.slice(0,40) + ' ...' : line}
                         </p>
                         
                       ))}

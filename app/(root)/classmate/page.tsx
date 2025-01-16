@@ -1,18 +1,31 @@
 'use client';
 import React, { useState } from 'react';
-import UploadCourse from '@/app/_component/UploadCourse';
-import { useMutation, useQuery } from 'convex/react';
+// import UploadCourse from '@/app/_component/UploadCourse';
+import { useConvexAuth, useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import Link from 'next/link';
 
 const Users = () => {
     const me = useQuery(api.user.getMe);
-    const admin = me?.admin;
-
+    // const admin = me?.admin;
+    const createChat = useMutation(api.conversation.createChat)
     // Fetch users from Convex
     const filterUser = useQuery(api.user.getUser) || [];
 
-    const users = filterUser.filter(user => user._id !== me?._id || user.admin !== me.admin)
+    const users = filterUser.filter(user => user._id !== me?._id || user.admin !== me.admin);
 
+if (me) {
+    users.map(user => 
+        createChat({
+            participants: [user._id, me._id]
+        })
+    )
+}
+const { isAuthenticated } = useConvexAuth();
+const chats = useQuery(api.conversation.getChat, isAuthenticated ? undefined : "skip");
+const identity = chats?.map((chat) => chat) || [];
+console.log()
+    
     const [searchQuery, setSearchQuery] = useState('');
     let [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -37,7 +50,6 @@ const Users = () => {
         <div className="h-full flex flex-col p-3 w-full">
             <div className="flex justify-between items-center mb-4">
                 <p className="text-xl font-bold">Course mates</p>
-  
             </div>
 
             <div className="mb-4 flex flex-wrap gap-4">
@@ -57,6 +69,7 @@ const Users = () => {
                             <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">S/N</th>
                             <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Name</th>
                             <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Contact</th>
+                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-600">Message</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +80,13 @@ const Users = () => {
                                     {user.name}
                                 </td>
                                 <td className="border text-center border-gray-300 px-4 py-2">{user.email}</td>
+                                <td className="border text-center border-gray-300 px-4 py-2">
+                                   {me?._id && identity.filter(chat => chat.participant.includes(me._id) && chat.participant.includes(user._id)).map(chat => (
+                                       <Link key={chat._id} href={`./chat/${chat._id}`}>Chat {':)'}</Link>
+                                   ))}
+                                    {/* {id.includes(me?._id) && id.includes(user._id) &&  } */}
+                       
+                                </td>
                             </tr>
                         ))}
                     </tbody>
