@@ -164,7 +164,7 @@ const Note = () => {
                     <DropdownMenuTrigger>
                       <Button variant="outline">Download</Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className='h-[50px] overflow-y-scroll'>
                       {note.imageUrl.length > 1 && (
                         <DropdownMenuItem onClick={() => downloadAllImages(note.imageUrl, note.title)}>
                           Download All as ZIP
