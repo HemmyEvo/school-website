@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} min-h-[100vh] relative ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 min-h-[100vh] relative ${geistMono.variable} antialiased`}
       >
              <ThemeProvider
           attribute="class"

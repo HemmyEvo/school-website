@@ -7,7 +7,6 @@ import { toast } from 'react-hot-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { truncate } from 'fs';
 
 const Page = () => {
   const [username, setUsername] = useState('');
@@ -31,21 +30,21 @@ const Page = () => {
     confirmPassword: '',
   });
 
-  const { signUp,isLoaded } = useSignUp();
-  const { isSignedIn } = useAuth(); // Check if the user is signed in
-  const router = useRouter()
+  const { signUp, isLoaded } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
   // Redirect if authenticated
   React.useEffect(() => {
     if (isSignedIn) {
-      router.push('/chat'); // Redirect to home page if user is signed in
+      router.push('/chat');
     }
   }, [isSignedIn, router]);
 
-  if(!isLoaded){
-   
-    return null
-}
+  if (!isLoaded) {
+    return null;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErr: typeof err = {
@@ -77,7 +76,7 @@ const Page = () => {
       newErr.username = 'Matric number must be at least 10 characters long';
       hasErrors = true;
     }
-  const numberRegex = /^\d+$/; // Matches one or more digits (0-9)
+    const numberRegex = /^\d+$/;
     if (!numberRegex.test(username.trim())) {
       newErr.username = 'Please enter a valid matric number';
       hasErrors = true;
@@ -90,168 +89,213 @@ const Page = () => {
       newErr.confirmPassword = 'Confirm password must be at least 8 characters long';
       hasErrors = true;
     }
-    // Validate password confirmation
     if (password !== confirmPassword) {
-      newErr.confirmPassword = 'Passwords must be the same';
+      newErr.confirmPassword = 'Passwords must match';
       hasErrors = true;
     }
 
-    // Update error state
     setErr(newErr);
 
-    // If there are validation errors, return early
     if (hasErrors) {
       return;
     }
     
-    setIsLoading(true) 
+    setIsLoading(true);
  
-      try {
-        const signUpAttempt = await signUp?.create({
-          emailAddress: email,
-          password: password,
-          firstName: firstName,
-          lastName: secondName,
-          username: 'Lau'+username
-        });
-        sessionStorage.setItem('emailForVerification', email)
-        const prepareVerify = await signUpAttempt?.prepareEmailAddressVerification()
-      if(prepareVerify){
-        router.push('/verify-code')
+    try {
+      const signUpAttempt = await signUp?.create({
+        emailAddress: email,
+        password: password,
+        firstName: firstName,
+        lastName: secondName,
+        username: 'Lau' + username
+      });
+      sessionStorage.setItem('emailForVerification', email);
+      const prepareVerify = await signUpAttempt?.prepareEmailAddressVerification();
+      if (prepareVerify) {
+        router.push('/verify-code');
+      } else {
+        toast.error('Unable to connect to internet.');
       }
-      else{
-        toast.error('Unable to connect to internet.')
-      }
-      } catch (error: any) {
+    } catch (error: any) {
       if (error?.errors) {
         error?.errors.forEach((err: any) => {
-         setError(err.message || 'An unknown error occurred')
+          setError(err.message || 'An unknown error occurred');
         });
       } else {
         toast.error('An error occurred during sign-up. Please try again.');
       }
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100vh] flex w-full py-5 items-center">
-      <form onSubmit={handleSubmit} className="max-w-sm w-lvw p-4 bg-[#b1b1b1] rounded-[10px] dark:bg-[#202020] shadow-md shadow-[#3b3b3b] mx-auto">
-      <div className="logo mb-7 text-center">
-       
-       <h1 className="text-xl font-semibold flex items-center justify-center">
-         <span> <Image src="/favicon.png" alt="Hemmyevo" width={50} height={50} /></span>   
-       </h1>
-       <p className="tracking-widest mt-2 font-bold">HemmyEvo</p>
-     </div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 p-4">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-purple-600 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-600 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <form 
+        onSubmit={handleSubmit} 
+        className="relative max-w-md w-full p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20"
+      >
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-20 h-20 relative mb-4">
+            <Image 
+              src="/favicon.png" 
+              alt="School Logo" 
+              width={80} 
+              height={80} 
+              className="object-contain"
+            />
+          </div>
+           <h1 className="text-2xl font-bold text-white">Classroom Portal</h1>
+          <p className="text-white/80 mt-1">Student Registration</p>
+        </div>
+
         {error && (
-          <p className='text-red-500 text-center mb-4'>{error}</p>
+          <div className="mb-6 p-3 bg-red-500/20 text-red-100 rounded-lg text-center">
+            {error}
+          </div>
         )}
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-first-name">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="firstName">
               First Name
             </label>
             <input
               value={firstName}
               onChange={(e) => { err.firstName = ''; setFirstName(e.target.value) }}
               id="firstName"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               type="text"
-              placeholder="Jane" />
-            <p className="text-red-500 text-xs italic">{err.firstName}</p>
+              placeholder="John"
+            />
+            {err.firstName && <p className="mt-1 text-xs text-red-300">{err.firstName}</p>}
           </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-last-name">
+          <div>
+            <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="secondName">
               Last Name
             </label>
             <input
               value={secondName}
               onChange={(e) => { err.secondName = ''; setSecondName(e.target.value) }}
               id="secondName"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               type="text"
-              placeholder="Doe" />
-            <p className="text-red-500 text-xs italic">{err.secondName}</p>
+              placeholder="Doe"
+            />
+            {err.secondName && <p className="mt-1 text-xs text-red-300">{err.secondName}</p>}
           </div>
         </div>
 
-        <div className="mb-5">
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="email">
+            University Email
+          </label>
           <input
-            type="text"
+            type="email"
             value={email}
             onChange={(e) => { err.email = ''; setEmail(e.target.value) }}
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-            placeholder='Email'
+            className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            placeholder="student@student.lautech.edu.ng"
           />
-          <p className='text-red-500 text-xs italic'>{err.email}</p>
+          {err.email && <p className="mt-1 text-xs text-red-300">{err.email}</p>}
         </div>
-        <div className="mb-5">
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="username">
+            Matriculation Number
+          </label>
           <input
             type="text"
             value={username}
             onChange={(e) => { err.username = ''; setUsername(e.target.value) }}
             id="username"
             disabled={disableUsername}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-            placeholder='Matric Number'
+            className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            placeholder="1234567890"
           />
-          <p className='text-red-500 text-xs italic'>{err.username}</p>
+          {err.username && <p className="mt-1 text-xs text-red-300">{err.username}</p>}
         </div>
 
-        <div className="mb-5 relative">
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="password">
+            Password
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => { err.password = ''; setPassword(e.target.value) }}
               id="password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-              placeholder='Password'
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-10"
+              placeholder="••••••••"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="text-gray-500" /> : <Eye className="text-gray-500" />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p className='text-red-500 text-xs italic'>{err.password}</p>
+          {err.password && <p className="mt-1 text-xs text-red-300">{err.password}</p>}
         </div>
 
-        <div className="mb-5 relative">
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="confirmPassword">
+            Confirm Password
+          </label>
           <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => { err.confirmPassword = ''; setConfirmPassword(e.target.value) }}
               id="confirmPassword"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-              placeholder='Confirm Password'
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-10"
+              placeholder="••••••••"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors"
               aria-label={showConfirmPassword ? "Hide password" : "Show password"}
             >
-              {showConfirmPassword ? <EyeOff className="text-gray-500" /> : <Eye className="text-gray-500" />}
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p className='text-red-500 text-xs italic'>{err.confirmPassword}</p>
+          {err.confirmPassword && <p className="mt-1 text-xs text-red-300">{err.confirmPassword}</p>}
         </div>
 
-        <Button type="submit" disabled={isloading}>
-         {isloading ? "Signing Up..." : "Sign Up"}
+        <Button 
+          type="submit" 
+          disabled={isloading}
+          className="w-full py-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium rounded-lg transition-all transform hover:scale-[1.02] shadow-lg"
+        >
+          {isloading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating Account...
+            </span>
+          ) : "Register Now"}
         </Button>
-        <hr className='my-5' />
-        <div className="text-center">
-          <span>I already have an account? </span>
-          <span className='underline text-blue-800'><Link href='/sign-in'>Sign in</Link></span>
+
+        <div className="mt-6 text-center text-white/80">
+          <p>Already have an account?{' '}
+            <Link href="/sign-in" className="text-white font-medium hover:underline hover:text-purple-300 transition-colors">
+              Sign in here
+            </Link>
+          </p>
         </div>
       </form>
     </div>

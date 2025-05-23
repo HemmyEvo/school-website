@@ -17,18 +17,17 @@ const Page = () => {
   const { signIn, isLoaded } = useSignIn();
   const [isloading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { isSignedIn } = useAuth(); // Check if the user is signed in
+  const { isSignedIn } = useAuth();
 
   // Redirect if authenticated
   React.useEffect(() => {
     if (isSignedIn) {
       router.push('/');
-      // Redirect to home page if user is signed in
     }
   }, [isSignedIn, router]);
 
   if (!isLoaded) {
-    return null
+    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,11 +40,11 @@ const Page = () => {
 
     // Validation
     if (username.trim().length < 5) { 
-      newErr.username = 'Username must be at least 5 characters long';
+      newErr.username = 'Student ID must be at least 5 characters';
       hasErrors = true;
     }
     if (password.trim().length < 8) {
-      newErr.password = 'Password must be at least 8 characters long';
+      newErr.password = 'Password must be at least 8 characters';
       hasErrors = true;
     }
 
@@ -61,22 +60,20 @@ const Page = () => {
         password: password,
       });
       if (attemptSignIn) {
-        // Show success toast
-        toast.success('Login successful! Redirecting...');
-
+        toast.success('Welcome back! Redirecting...');
         setTimeout(() => {
           window.location.pathname = '/';
         }, 2000);
       } else {
-        toast.error('Unable to connect to internet.');
+        toast.error('Unable to connect. Please try again.');
       }
     } catch (error: any) {
       if (error?.errors) {
         error.errors.forEach((err: any) => {
-          toast.error(err.message || 'An unknown error occurred');
+          toast.error(err.message || 'Login failed. Please check your credentials.');
         });
       } else {
-        toast.error('An error occurred during sign-up. Please try again.');
+        toast.error('An error occurred. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -84,66 +81,120 @@ const Page = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <form
+    <div className="min-h-screen w-full flex items-center justify-center  p-4">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-emerald-400 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/2 w-64 h-64 bg-teal-400 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <form 
         onSubmit={handleSubmit}
-        className="max-w-sm w-lvw p-4 bg-[#b1b1b1] rounded-[10px] dark:bg-[#202020] shadow-md shadow-[#3b3b3b] mx-auto"
+        className="relative max-w-md w-full p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20"
       >
-        <div className="logo mb-7 text-center">
-          <h1 className="text-xl font-semibold flex items-center justify-center">
-            <span>
-              <Image src="/favicon.png" alt="Hemmyevo" width={50} height={50} />
-            </span>
-          </h1>
-          <p className="tracking-widest mt-2 font-bold">HemmyEvo</p>
+        {/* Portal Logo and Title */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 relative mb-4 bg-white/20 p-3 rounded-full">
+            <Image 
+              src="/favicon.png" 
+              alt="Classroom Portal" 
+              width={64} 
+              height={64} 
+              className="object-contain"
+            />
+          </div>
+          <h1 className="text-2xl font-bold text-white">Classroom Portal</h1>
+          <p className="text-white/80 mt-1">Student Sign In</p>
         </div>
 
+        {/* Student ID Field */}
         <div className="mb-5">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="username">
+            Student ID
+          </label>
           <input
             type="text"
             value={username}
             onChange={(e) => { setUsername(e.target.value); setErr((prev) => ({ ...prev, username: '' })); }}
             id="username"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-            placeholder="Matric Number"
+            className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="Enter your student ID"
           />
-          {err.username && <p className="text-red-500 text-xs italic">{err.username}</p>}
+          {err.username && <p className="mt-1 text-xs text-red-300">{err.username}</p>}
         </div>
 
-        <div className="mb-5 relative">
+        {/* Password Field */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-white/80 mb-1" htmlFor="password">
+            Password
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(e) => { err.password = ''; setPassword(e.target.value); }}
+              onChange={(e) => { setPassword(e.target.value); setErr((prev) => ({ ...prev, password: '' })); }}
               id="password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-              placeholder="Password"
+              className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all pr-10"
+              placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <EyeOff className="text-gray-500" /> : <Eye className="text-gray-500" />}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p className='text-red-500 text-xs italic'>{err.password}</p>
+          {err.password && <p className="mt-1 text-xs text-red-300">{err.password}</p>}
         </div>
 
-        <Button type="submit" disabled={isloading}>{isloading ? 'Signing In...' : 'Sign In'}</Button>
-        <p className="text-sm mt-5 text-right ">
-          <span>Forgot Password?</span>
-          <span><Link className='text-sm underline text-blue-800' href="/forgot-password"> Reset here</Link></span>
-        </p>
-        <hr className="my-5" />
+        {/* Sign In Button */}
+        <Button 
+          type="submit" 
+          disabled={isloading}
+          className="w-full py-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium rounded-lg transition-all transform hover:scale-[1.02] shadow-lg"
+        >
+          {isloading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing In...
+            </span>
+          ) : "Sign In"}
+        </Button>
 
+        {/* Forgot Password Link */}
+        <div className="mt-4 text-right">
+          <Link 
+            href="/forgot-password" 
+            className="text-sm text-white/80 hover:text-white hover:underline transition-colors"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/20"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="px-2 bg-transparent text-sm text-white/50">New to Classroom Portal?</span>
+          </div>
+        </div>
+
+        {/* Sign Up Link */}
         <div className="text-center">
-          <span>I don&apos;t have an account?</span>
-          <span className="underline text-blue-800">
-            <Link href="/sign-up"> Sign up</Link>
-          </span>
+          <Link 
+            href="/sign-up" 
+            className="text-white font-medium hover:underline hover:text-blue-200 transition-colors"
+          >
+            Create Student Account
+          </Link>
         </div>
       </form>
     </div>
