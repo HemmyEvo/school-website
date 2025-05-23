@@ -45,7 +45,7 @@ return (
           className={`flex flex-col max-w-[80%] px-4 py-2 rounded-xl shadow-lg ${bgClass} border border-white/20`}
         >
           {renderMessageContent()}
-          <MessageTime time={time} fromMe={fromMe} />
+          <MessageTime ChatDetails={ChatDetails} message={message} time={time} fromMe={fromMe} />
         </div>
       </div>
     </>
