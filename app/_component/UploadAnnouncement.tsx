@@ -224,7 +224,7 @@ const UploadAnnouncementAction = () => {
                 <FormField
                   control={form.control}
                   name="attachment"
-                  render={({ field }) => (
+                  render={({ field }:any) => (
                     <FormItem>
                       <FormLabel>Attachment</FormLabel>
                       <FormControl>
