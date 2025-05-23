@@ -20,7 +20,9 @@ const ChatBubble = ({ me, message, previousMessage, ChatDetails }: any) => {
 
 	const isGroup = ChatDetails?.isGroup;
 	const fromMe = message.sender?._id === me._id;
-	const bgClass = fromMe ? "bg-[#59f794]" :  "bg-white";
+	const bgClass = fromMe 
+    ? "bg-[#59f794]/80 backdrop-blur-sm" 
+    : "bg-white/80 dark:bg-[#2d2d2d]/80 backdrop-blur-sm";
 	const [open, setOpen] = useState(false);
 
 	const renderMessageContent = () => {
@@ -34,39 +36,23 @@ const ChatBubble = ({ me, message, previousMessage, ChatDetails }: any) => {
 				return null;
 		}
 	};
-
-	
-	if (!fromMe) {
-		return (
-			<>
-				<DateIndicator message={message} previousMessage={previousMessage} />
-				<div className='flex gap-1 w-2/3'>
-					<ChatBubbleAvatar message={message}/>
-					<div className={`flex flex-col z-20 max-w-[100%] px-2 pt-1  rounded-md shadow-md relative ${bgClass}`}>
-						<OtherMessageIndicator />
-						{renderMessageContent()}
-						{open && <ImageDialog src={message.content} open={open} onClose={() => setOpen(false)} />}
-						<MessageTime ChatDetails={ChatDetails} message={message} time={time} fromMe={fromMe} />
-					</div>
-				</div>
-			</>
-		);
-	}
-	
-	return (
-		<>
-			<DateIndicator message={message} previousMessage={previousMessage} />
-			<div className='flex gap-1 w-2/3 ml-auto'>
-				<div className={`flex flex-col z-20 max-w-[100%] px-2 pt-1 ml-auto rounded-md shadow-md relative ${bgClass}`}>
-					<SelfMessageIndicator />
-					{renderMessageContent()}
-					{open && <ImageDialog src={message.content} open={open} onClose={() => setOpen(false)} />}
-					<MessageTime ChatDetails={ChatDetails} message={message} time={time} fromMe={fromMe} />
-				</div>
-			</div>
-		</>
-	);
+return (
+    <>
+      <DateIndicator message={message} previousMessage={previousMessage} />
+      <div className={`flex gap-2 w-full ${fromMe ? "justify-end" : "justify-start"}`}>
+        {!fromMe && <ChatBubbleAvatar message={message} />}
+        <div
+          className={`flex flex-col max-w-[80%] px-4 py-2 rounded-xl shadow-lg ${bgClass} border border-white/20`}
+        >
+          {renderMessageContent()}
+          <MessageTime time={time} fromMe={fromMe} />
+        </div>
+      </div>
+    </>
+  );
 };
+	
+	
 export default ChatBubble;
 
 
@@ -89,23 +75,27 @@ const ImageMessage = ({ message, handleClick }: any) => {
 
 
 const ImageDialog = ({ src, onClose, open }: { open: boolean; src: string; onClose: () => void }) => {
-	return (
-		<Dialog
-			open={open}
-			onOpenChange={(isOpen) => {
-				if (!isOpen) onClose();
-			}}
-		>
-			<DialogTitle />
-			<DialogContent className='min-w-[750px]'>
-				<DialogDescription className='relative h-[450px] flex justify-center'>
-					<Image src={src} fill className='rounded-lg object-contain' alt='image' />
-				</DialogDescription>
-			</DialogContent>
-		</Dialog>
-	);
+  return (
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="bg-transparent border-none max-w-[90vw]">
+        <div className="relative h-[80vh] w-full bg-black/50 backdrop-blur-lg rounded-xl overflow-hidden border border-white/20">
+          <Image 
+            src={src} 
+            fill 
+            className="object-contain p-4" 
+            alt="Enlarged chat image" 
+          />
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 p-2 rounded-full"
+          >
+            ✕
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 };
-
 
 
 const MessageTime = ({ time, fromMe, ChatDetails,  message }: { time: string; fromMe: boolean; ChatDetails: any; message:any;}) => {
@@ -130,29 +120,25 @@ const SelfMessageIndicator = () => (
 
 
 const TextMessage = ({ message }: any) => {
-	const isLink = /^(ftp|http|https):\/\/[^ "]+$/.test(message.content); // Check if the content is a URL
-	const messageArray = message.content.split("\n");
-  
-	return (
-	  <div >
-		{isLink ? (
-		  // If it's a URL, render it as a clickable link
-		  <a
-			href={message.content}
-			target='_blank'
-			rel='noopener noreferrer'
-			className='mr-2 text-sm font-light break-words text-blue-400 underline'
-		  >
-			{message.content} {/* Display the URL as a single line */}
-		  </a>
-		) : (
-		  // Otherwise, render each line of the message in a separate <p> tag
-		  messageArray.map((msg: string, i: number) => (
-			<p className='mr-2 w-[100%]  break-words text-sm font-light' key={i}>
-			  {msg}
-			</p>
-		  ))
-		)}
-	  </div>
-	);
-  };
+  const isLink = /^(ftp|http|https):\/\/[^ "]+$/.test(message.content);
+
+  return (
+    <div className="space-y-1">
+      {isLink ? (
+        <a
+          href={message.content}
+          target="_blank"
+          className="text-blue-500 hover:text-blue-400 underline break-all"
+        >
+          {message.content}
+        </a>
+      ) : (
+        message.content.split("\n").map((line, i) => (
+          <p key={i} className="text-gray-800 dark:text-gray-200">
+            {line}
+          </p>
+        ))
+      )}
+    </div>
+  );
+};
