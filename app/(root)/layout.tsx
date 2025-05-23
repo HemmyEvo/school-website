@@ -16,9 +16,9 @@ const layout = ({children}: Props) => {
 <div className="flex flex-col min-h-screen">
   <Header />
   <main className="flex-grow mb-auto">
-    <Card className='mt-10 overflow-hidden mx-auto max-w-[1000px]'>
+    
       {children}
-    </Card>
+   
   </main>
   <Footer />
 </div>
