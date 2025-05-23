@@ -133,7 +133,7 @@ const TextMessage = ({ message }: any) => {
           {message.content}
         </a>
       ) : (
-        message.content.split("\n").map((line, i) => (
+        message.content.split("\n").map((line : any, i) => (
           <p key={i} className="text-gray-800 dark:text-gray-200">
             {line}
           </p>
