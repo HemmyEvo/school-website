@@ -29,3 +29,4 @@ const Head = ({ ChatDetails }: { ChatDetails: any }) => {
     </div>
   );
 };
+export default Head
